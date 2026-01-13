@@ -41,6 +41,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="join" element={<Signup />} />
           <Route path="onboarding" element={<Onboarding />} />
+          <Route path="profile" element={<Portfolio />} />
           <Route path="edit-profile" element={<EditProfile />} />
           <Route path="admin" element={<Admin />} />
           <Route path="*" element={<div className='text-center py-20 dark:text-white'>404 Not Found</div>} />

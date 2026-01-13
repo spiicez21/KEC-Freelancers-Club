@@ -114,9 +114,11 @@ const Portfolio: React.FC = () => {
                             </div>
 
                             <div className="flex gap-3 justify-center md:justify-end pb-2">
-                                <Link to="/edit-profile" className="px-10 py-5 bg-emerald-500 text-white rounded-[28px] font-bold font-display text-xs tracking-[0.2em] flex items-center gap-3 hover:bg-emerald-600 transition-all shadow-2xl shadow-emerald-500/20 active:scale-95 uppercase">
-                                    <Edit2 size={18} /> Edit Profile
-                                </Link>
+                                {currentUser && currentUser.id === user.id && (
+                                    <Link to="/edit-profile" className="px-10 py-5 bg-emerald-500 text-white rounded-[28px] font-bold font-display text-xs tracking-[0.2em] flex items-center gap-3 hover:bg-emerald-600 transition-all shadow-2xl shadow-emerald-500/20 active:scale-95 uppercase">
+                                        <Edit2 size={18} /> Edit Profile
+                                    </Link>
+                                )}
                                 <div className="flex gap-2">
                                     {user.socials?.linkedin && (
                                         <a href={user.socials.linkedin} target="_blank" rel="noopener" className="p-5 apple-blur rounded-[28px] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">

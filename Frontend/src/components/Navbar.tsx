@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Sun, Moon, LogOut, User } from 'lucide-react';
 import Button from './ui/Button';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
     darkMode: boolean;
@@ -11,6 +12,13 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+    const { currentUser, logout } = useAuth();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
+    };
 
     // Close mobile menu when route changes
     useEffect(() => {
@@ -33,6 +41,13 @@ const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
         { name: 'Works', path: '/works' },
         { name: 'About', path: '/about' },
     ];
+
+    if (currentUser) {
+        // Add Profile link if not already there or modify array
+        // actually let's just keep the main links and add profile to the actions area or conditionally here
+        // The user specifically asked for "direct button to navigate to my profile page"
+        // Let's add it to the main nav for visibility or next to the user icon
+    }
 
     return (
         <>
@@ -77,14 +92,44 @@ const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
                         </button>
 
                         <div className="hidden md:flex items-center gap-4 ml-1">
-                            <Link to="/login" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-                                Log in
-                            </Link>
-                            <Link to="/join">
-                                <Button size="sm" className="rounded-full px-5 text-xs font-bold">
-                                    Join
-                                </Button>
-                            </Link>
+                            {currentUser ? (
+                                <div className="flex items-center gap-4">
+                                    <Link
+                                        to="/profile"
+                                        className={`flex items-center gap-2 text-sm font-medium transition-colors ${location.pathname === '/profile'
+                                                ? 'text-emerald-500'
+                                                : 'text-zinc-600 dark:text-zinc-400 hover:text-emerald-500'
+                                            }`}
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center border border-emerald-500/20">
+                                            {currentUser.profileImage ? (
+                                                <img src={currentUser.profileImage} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                                            ) : (
+                                                <User size={16} className="text-emerald-500" />
+                                            )}
+                                        </div>
+                                        <span>Profile</span>
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-full transition-colors"
+                                        title="Log out"
+                                    >
+                                        <LogOut size={18} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <Link to="/login" className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+                                        Log in
+                                    </Link>
+                                    <Link to="/join">
+                                        <Button size="sm" className="rounded-full px-5 text-xs font-bold">
+                                            Join
+                                        </Button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
 
                         <button
@@ -127,14 +172,35 @@ const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
                     ))}
 
                     <div className="flex flex-col gap-4 w-full px-8">
-                        <Link to="/join" onClick={() => setIsOpen(false)}>
-                            <Button size="lg" className="w-full rounded-full text-lg">
-                                Join Now
-                            </Button>
-                        </Link>
-                        <Link to="/login" onClick={() => setIsOpen(false)} className="text-zinc-500 dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-                            Log in
-                        </Link>
+                        {currentUser ? (
+                            <>
+                                <Link to="/profile" onClick={() => setIsOpen(false)}>
+                                    <Button size="lg" className="w-full rounded-full text-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border-transparent">
+                                        My Profile
+                                    </Button>
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        handleLogout();
+                                        setIsOpen(false);
+                                    }}
+                                    className="text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <LogOut size={18} /> Log out
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/join" onClick={() => setIsOpen(false)}>
+                                    <Button size="lg" className="w-full rounded-full text-lg">
+                                        Join Now
+                                    </Button>
+                                </Link>
+                                <Link to="/login" onClick={() => setIsOpen(false)} className="text-zinc-500 dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+                                    Log in
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
 
